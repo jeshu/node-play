@@ -53,106 +53,148 @@
 /* 1 */
 /***/ function(module, exports) {
 
-	Const = {
-	  contextType: '2d'
+	var Const = {
+	  contextType: '2d',
+	  GAME_NAME  :"pixcel cars",
+	  START_INSTRUCTION : "Press Spacebar to start !!!"
 	}
 	
-	  var canvas, context, secNeedle, hourNeedle, minNeedle,centerX, centerY, radius = 100;
+	var canvas, context, speed = 5, gameState = 0, score = 0, highScore = 0;
 	
-	  var init = function (canvasId) {
-	    canvas = document.getElementById(canvasId)
-	    context = canvas.getContext(Const.contextType)
-	    drawBase()
-	    drawNeedle()
-	    update()
+	function init(canvasId) {
+	  canvas = document.getElementById(canvasId);
+	  canvas.height = 400;
+	  canvas.width = 240;
+	  context = canvas.getContext(Const.contextType);
+	  context.lineDashOffset = 0
+	  initPreScreen();
+	  addControls();
+	}
+	
+	function initPreScreen(argument) {
+	  render(true);
+	  setTimeout(addInitText, 200);
+	}
+	
+	function render(static) {
+	  context.fillStyle = "#333";
+	  context.rect(0, 0, 240, 400);
+	  context.fill();
+	  createTracks();
+	  if(static || gameState == 0) {
+	    return;
 	  }
+	  if(gameState == 1) {
+	    addScore();
+	  };
+	  setTimeout(render, 60);
+	}
 	
-	  var update = function () {
-	    window.setTimeout(function () {
-	      radius = (canvas.width / 2) - 20;
-	      centerX = canvas.width / 2
-	      centerY = canvas.height / 2
-	      context.clearRect(0, 0, canvas.width, canvas.height)
-	      drawBase()
-	      drawNeedle()
-	      update()
-	    }, 1000)
-	  }
+	function addInitText(argument) {
 	
-	  var drawCounts = function () {
-	    for (var i = 0; i < 60; i++) {
-	      context.beginPath()
-	      var angle = (i * 6 * (Math.PI / 180))
-	      var len = (i % 5 == 0) ? ((i % 15 == 0) ? canvas.width/2-30 : canvas.width/2 - 35) : canvas.width/2-25
-	      var x1 = centerX + len * Math.sin(angle)
-	      var x2 = centerX + (canvas.width/2-20) * Math.sin(angle)
-	      var y1 = centerX + len * Math.cos(angle)
-	      var y2 = centerX + (canvas.width/2 -20) * Math.cos(angle)
-	      context.moveTo(x1, y1)
-	      context.lineTo(x2, y2)
-	      context.lineWidth = 3
-	      context.strokeStyle = '#666'
-	      context.stroke()
+	  context.fillStyle = "#CCC";
+	  context.font = "28px sans-serif";
+		context.fillText(Const.GAME_NAME, 52,  150);
+		context.stroke();
+	  context.fillStyle = "#FFF";
+	  context.font = "11px sans-serif";
+		context.fillText(Const.START_INSTRUCTION, 55,  380);
+		context.stroke();
+	}
+	
+	function createTracks(argument) {
+	  context.strokeStyle = "#666";
+	  context.beginPath();
+	        context.lineWidth = 3
+	        context.setLineDash([20,30]);
+	        context.moveTo(80,0);
+	        context.lineTo(75,400);
+	        context.moveTo(160,0);
+	        context.lineTo(160,400);
+	    context.stroke();
+	    context.lineDashOffset = context.lineDashOffset - speed;
+	    if(context.lineDashOffset > 50-speed) {
+	      context.lineDashOffset = 0
+	    }
+	}
+	
+	function addControls(argument) {
+	  $(document).on("keydown", keyDownHandler)
+	  $(document).on("keyup", keyUpHandler)
+	}
+	
+	function keyUpHandler(argument) {
+	  speed -= 15;
+	}
+	
+	function keyDownHandler(evt) {
+	  console.log(evt.which);
+	  if(evt.which == 32 && gameState == 0) {
+	    gameState = 1;
+	    startGame();
+	  } else if(gameState == 1){
+	    switch (evt.which) {
+	      case 13 :
+	        endGame();
+	        break;
+	      case 39:
+	        console.log("palyer move right");
+	        break;
+	      case 37:
+	        console.log("palyer move left");
+	        break;
+	      case 38:
+	        speed += 15;
+	        score++;
+	        console.log("palyer speeds up");
+	      default:
+	
 	    }
 	  }
+	}
 	
-	  var drawBase = function () {
-	    context.beginPath()
-	    context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false)
-	    context.fillStyle = '#000'
-	    context.fill()
-	    context.lineWidth = 5
-	    context.strokeStyle = '#666'
-	    context.stroke()
+	function startGame(argument) {
+	  console.log("palyer game starts");
+	  render();
+	}
 	
+	function addScore() {
+	  console.log(score, speed);
+	  score++;
+	  context.fillStyle = "#FFF";
+	  context.font = "10px sans-serif";
+		context.fillText("Score : "+score, 165,  15);
+		context.stroke();
+	  if(score > speed * 10) {
+	    speed += 10;
 	  }
-	
-	  var drawNeedle = function () {
-	    var time = new Date()
-	    context.lineWidth = 3
-	    drawLines(getHourAngle(time), '#CCC', canvas.width/2 - 85)
-	    drawLines(getMinuteAngle(time), '#999', canvas.width/2 - 55)
-	    drawLines(getSecondsAngle(time), '#666', canvas.width/2 - 35)
-	    drawCounts()
-	    context.beginPath()
-	    context.arc(centerX, centerY, 5, 0, 2 * Math.PI, false)
-	    context.fillStyle = '#999'
-	    context.fill()
-	    context.stroke()
-	
+	  if(speed >= 50) {
+	    endGame();
 	  }
+	}
 	
-	  drawLines = function (angel, color, length) {
-	    context.beginPath()
-	    context.strokeStyle = color
-	    context.moveTo(centerX, centerY)
-	    var x = centerX - length * Math.sin(angel)
-	    var y = centerY - length * Math.cos(angel)
-	    context.lineTo(x, y)
-	    context.stroke()
+	function endGame(argument) {
+	  if(highScore < score) {
+	    highScore = score;
 	  }
+	  gameState = 0;
+	  score = 0;
+	  speed = 10;
+	  setTimeout(function() {
+	    initPreScreen();
+	    context.fillStyle = "#FFF";
+	    context.font = "20px sans-serif";
+	  	context.fillText(highScore, 100, 200);
+	  }, 200)
+	}
 	
-	  var getSecondsAngle = function (time) {
-	    var sec = time.getSeconds() * -6
-	    var angel = sec * Math.PI / 180
-	    return angel
-	  }
-	  var getMinuteAngle = function (time) {
-	    var minute = time.getMinutes() * -6
-	    var angel = minute * Math.PI / 180
-	    return angel
-	  }
+	function showScoreScreen(argument) {
+	  // body...
+	}
 	
-	  var getHourAngle = function (time) {
-	    var hour = time.getHours() * -30
-	    var angel = (hour * Math.PI / 180) + getMinuteAngle(time) / 12
-	    return angel
-	  }
-	
-	  var api = {
-	    init: init
-	  };
-	  module.exports = api;
+	module.exports  = {
+	  init : init
+	}
 
 
 /***/ }

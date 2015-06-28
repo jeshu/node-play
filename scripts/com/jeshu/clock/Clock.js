@@ -1,4 +1,4 @@
-Const = {
+var Const = {
   contextType: '2d'
 }
 

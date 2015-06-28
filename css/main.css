@@ -7,10 +7,13 @@ body {
 }
 
 .mainContainer {
-  width: 1000px;
+  max-width: 1000px;
   background: #F0F0F0;
   margin: 0px auto;
-  height: 100%;
+}
+canvas {
+  display: block;
+  margin: 0 auto;
 }
 
 .header {
