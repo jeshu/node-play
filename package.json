@@ -1,0 +1,28 @@
+{
+  "name": "node-play",
+  "version": "0.0.1",
+  "description": "fun activites here... ",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jeshu/node-play.git"
+  },
+  "keywords": [
+    "node",
+    "games"
+  ],
+  "author": "jeshuBrij",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jeshu/node-play/issues"
+  },
+  "homepage": "https://github.com/jeshu/node-play",
+  "devDependencies": {
+    "node-libs-browser": "^0.5.2",
+    "webpack": "^1.9.13",
+    "webpack-dev-server": "^1.9.0"
+  }
+}

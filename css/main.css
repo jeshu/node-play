@@ -1,0 +1,24 @@
+body {
+  padding: 0px;
+  margin: 0px auto;
+  font-size: 14px;
+  font-family: sans-serif;
+  background: #FFF;
+}
+
+.mainContainer {
+  width: 1000px;
+  background: #F0F0F0;
+  margin: 0px auto;
+  height: 100%;
+}
+
+.header {
+  height: 60px;
+  width: 100%;
+  color: #666;
+  background: #FFF
+}
+.heading{
+  padding: 3px 20px;
+}
