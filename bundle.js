@@ -56,7 +56,8 @@
 	var Const = {
 	  contextType: '2d',
 	  GAME_NAME  :"pixcel cars",
-	  START_INSTRUCTION : "Press Spacebar to start !!!"
+	  START_INSTRUCTION : "Press Spacebar to start !!!",
+	  BLOCK_SIZE : 10
 	}
 	var bgColor = "#DBDFCD";
 	var canvas, context, speed = 5, gameState = 0, score = 0, highScore = 0;
@@ -78,15 +79,16 @@
 	
 	function createBlocks(isDark, x, y) {
 	  var color = isDark ? "#5C604E" : "#CDD2B9";
-	  
+	  x = x*Const.BLOCK_SIZE;
+	  y = y*Const.BLOCK_SIZE;
 	  context.fillStyle = color;
-	  context.fillRect(x, y, 10, 10);
+	  context.fillRect(x, y, Const.BLOCK_SIZE, Const.BLOCK_SIZE);
 	
 	  context.fillStyle = bgColor;
-	  context.fillRect(x+1, y+1, 8, 8);
+	  context.fillRect(x+1, y+1, Const.BLOCK_SIZE - 2 , Const.BLOCK_SIZE -2);
 	
 	  context.fillStyle = color;
-	  context.fillRect(x+3, y+3, 4, 4);
+	  context.fillRect(x+3, y+3, Const.BLOCK_SIZE -6 , Const.BLOCK_SIZE -6);
 	}
 	
 	function render(static) {
@@ -95,9 +97,12 @@
 	  var col = canvas.width/10;
 	  for (var i = 0; i < row; i++) {
 	    for (var j = 0; j < col; j++) {
-	      createBlocks(false, j*10, i*10);
+	      createBlocks(false, j, i);
 	    };
 	  };
+	  playerCar(9,34)
+	  enemyCar(4,10)
+	  enemyCar(13,10)
 	  return
 	  // context.fillStyle = "#333";
 	  // context.rect(0, 0, 240, 400);
@@ -110,6 +115,43 @@
 	  //   addScore();
 	  // };
 	  // setTimeout(render, 60);
+	}
+	
+	function moveCar() {
+	  
+	}
+	
+	function playerCar( x, y) {
+	  var carPts = [
+	    {x : x+1, y : y},
+	    {x : x, y : y+1},
+	    {x : x+1, y : y+1},
+	    {x : x+1, y : y+2},
+	    {x : x+2, y : y+1},
+	    {x : x, y : y+3},
+	    {x : x+1, y : y+3},
+	    {x : x+2, y : y+3}
+	  ];
+	  carPts.forEach(function(item) {
+	    console.log(item)
+	    createBlocks(true, item.x, item.y)
+	  });
+	}
+	
+	function enemyCar(x, y) {
+	  var carPts = [
+	    {x : x+1, y : y},
+	    {x : x, y : y+1},
+	    {x : x+1, y : y+1},
+	    {x : x+1, y : y+2},
+	    {x : x+2, y : y+1},
+	    {x : x, y : y+3},
+	    {x : x+2, y : y+3}
+	  ];
+	  carPts.forEach(function(item) {
+	    console.log(item)
+	    createBlocks(true, item.x, item.y)
+	  });
 	}
 	
 	function addInitText(argument) {
