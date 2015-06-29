@@ -4,8 +4,9 @@ var Const = {
   START_INSTRUCTION : "Press Spacebar to start !!!",
   BLOCK_SIZE : 10
 }
+
 var bgColor = "#DBDFCD";
-var canvas, context, speed = 5, gameState = 0, score = 0, highScore = 0;
+var canvas, context, speed = 5, gameState = 0, score = 0, highScore = 0, plyX = 9, plyY = 36;
 
 function init(canvasId) {
   canvas = document.getElementById(canvasId);
@@ -18,8 +19,8 @@ function init(canvasId) {
 }
 
 function initPreScreen(argument) {
-  render(true);
- // setTimeout(addInitText, 200);
+  //render(true);
+  // setTimeout(addInitText, 200);
 }
 
 function createBlocks(isDark, x, y) {
@@ -45,9 +46,12 @@ function render(static) {
       createBlocks(false, j, i);
     };
   };
-  playerCar(9,34)
-  enemyCar(4,10)
-  enemyCar(13,10)
+
+  playerCar(plyX,plyY);
+
+  setTimeout(moveCar, 5000, 4, -4)
+  setTimeout(moveCar, 2000, 14, -4)
+  setTimeout(moveCar, 0, 9, -4)
   return
   // context.fillStyle = "#333";
   // context.rect(0, 0, 240, 400);
@@ -62,11 +66,34 @@ function render(static) {
   // setTimeout(render, 60);
 }
 
-function moveCar() {
-  
+function moveCar(x, y) {
+  enemyCar(x,y,true);
+  y++;
+
+  enemyCar(x,y,false);
+  console.log(x,y);
+  if(y < 40) {
+    setTimeout(moveCar, 100,x,y);
+  } else {
+    y = -4;
+    setTimeout(moveCar, Math.random()*2000,x,y);
+  }
 }
 
-function playerCar( x, y) {
+function slidePlayerCar(onLeft) {
+  playerCar(plyX, plyY, true)
+  var xPos = onLeft ? -5 : 5;
+  console.log(plyX);
+  plyX += xPos;
+  if(plyX < 4) {
+    plyX = 4
+  } else if(plyX > 14) {
+    plyX = 14
+  }
+  playerCar(plyX, plyY, false);
+}
+
+function playerCar(x, y, clear) {
   var carPts = [
     {x : x+1, y : y},
     {x : x, y : y+1},
@@ -78,12 +105,12 @@ function playerCar( x, y) {
     {x : x+2, y : y+3}
   ];
   carPts.forEach(function(item) {
-    console.log(item)
-    createBlocks(true, item.x, item.y)
+    // console.log(item)
+    createBlocks(!clear, item.x, item.y)
   });
 }
 
-function enemyCar(x, y) {
+function enemyCar(x, y, clear) {
   var carPts = [
     {x : x+1, y : y},
     {x : x, y : y+1},
@@ -94,8 +121,8 @@ function enemyCar(x, y) {
     {x : x+2, y : y+3}
   ];
   carPts.forEach(function(item) {
-    console.log(item)
-    createBlocks(true, item.x, item.y)
+    // console.log(item)
+    createBlocks(!clear, item.x, item.y)
   });
 }
 
@@ -147,9 +174,12 @@ function keyDownHandler(evt) {
         endGame();
         break;
       case 39:
+        slidePlayerCar(false)
         console.log("palyer move right");
         break;
       case 37:
+
+        slidePlayerCar(true)
         console.log("palyer move left");
         break;
       case 38:
