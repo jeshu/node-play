@@ -3,7 +3,7 @@ var Const = {
   GAME_NAME  :"pixcel cars",
   START_INSTRUCTION : "Press Spacebar to start !!!"
 }
-
+var bgColor = "#DBDFCD";
 var canvas, context, speed = 5, gameState = 0, score = 0, highScore = 0;
 
 function init(canvasId) {
@@ -18,21 +18,43 @@ function init(canvasId) {
 
 function initPreScreen(argument) {
   render(true);
-  setTimeout(addInitText, 200);
+ // setTimeout(addInitText, 200);
+}
+
+function createBlocks(isDark, x, y) {
+  var color = isDark ? "#5C604E" : "#CDD2B9";
+  
+  context.fillStyle = color;
+  context.fillRect(x, y, 10, 10);
+
+  context.fillStyle = bgColor;
+  context.fillRect(x+1, y+1, 8, 8);
+
+  context.fillStyle = color;
+  context.fillRect(x+3, y+3, 4, 4);
 }
 
 function render(static) {
-  context.fillStyle = "#333";
-  context.rect(0, 0, 240, 400);
-  context.fill();
-  createTracks();
-  if(static || gameState == 0) {
-    return;
-  }
-  if(gameState == 1) {
-    addScore();
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  var row = canvas.height/10;
+  var col = canvas.width/10;
+  for (var i = 0; i < row; i++) {
+    for (var j = 0; j < col; j++) {
+      createBlocks(false, j*10, i*10);
+    };
   };
-  setTimeout(render, 60);
+  return
+  // context.fillStyle = "#333";
+  // context.rect(0, 0, 240, 400);
+  // context.fill();
+  // createTracks();
+  // if(static || gameState == 0) {
+  //   return;
+  // }
+  // if(gameState == 1) {
+  //   addScore();
+  // };
+  // setTimeout(render, 60);
 }
 
 function addInitText(argument) {
