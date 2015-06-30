@@ -61,7 +61,10 @@
 	}
 	
 	var bgColor = "#DBDFCD";
-	var canvas, context, speed = 5, gameState = 0, score = 0, highScore = 0, plyX = 9, plyY = 36;
+	var canvas, context, speed = 5, gameState = 0, score = 0, highScore = 0,
+	 plyX = 9, plyY = 36, speed = 1, orignSpeed = 1;
+	var runEnemyCarsTimeout, inZipMode = false;
+	
 	
 	function init(canvasId) {
 	  canvas = document.getElementById(canvasId);
@@ -74,6 +77,7 @@
 	}
 	
 	function initPreScreen(argument) {
+	  addInitText();
 	  //render(true);
 	  // setTimeout(addInitText, 200);
 	}
@@ -101,38 +105,43 @@
 	      createBlocks(false, j, i);
 	    };
 	  };
-	
 	  playerCar(plyX,plyY);
+	  runEnemyCars();
+	  return;
+	}
 	
-	  setTimeout(moveCar, 5000, 4, -4)
-	  setTimeout(moveCar, 2000, 14, -4)
-	  setTimeout(moveCar, 0, 9, -4)
-	  return
-	  // context.fillStyle = "#333";
-	  // context.rect(0, 0, 240, 400);
-	  // context.fill();
-	  // createTracks();
-	  // if(static || gameState == 0) {
-	  //   return;
-	  // }
-	  // if(gameState == 1) {
-	  //   addScore();
-	  // };
-	  // setTimeout(render, 60);
+	function runEnemyCars() {
+	  if(gameState == 0) {
+	    return;
+	  }
+	  console.log("runEnemyCars | "   , (750/speed) * 10);
+	  var xPosArr = [4,9,14];
+	  var x = xPosArr[Math.round(Math.random()*2)]
+	  moveCar(x, -4)
+	  runEnemyCarsTimeout = setTimeout(runEnemyCars, (750/speed) * 10);
 	}
 	
 	function moveCar(x, y) {
+	  if(gameState == 0) {
+	    return;
+	  }
 	  enemyCar(x,y,true);
 	  y++;
 	
 	  enemyCar(x,y,false);
-	  console.log(x,y);
+	  // console.log(x,y);
 	  if(y < 40) {
-	    setTimeout(moveCar, 100,x,y);
+	    setTimeout(moveCar, 750/speed,x,y);
 	  } else {
 	    y = -4;
-	    setTimeout(moveCar, Math.random()*2000,x,y);
+	    // setTimeout(moveCar, Math.random()*2000,x,y);
 	  }
+	  if(x == plyX && y > plyY - 3)  {
+	    gameState = 0;
+	    console.log("gameOver");
+	    endGame();
+	  }
+	  addScore();
 	}
 	
 	function slidePlayerCar(onLeft) {
@@ -182,31 +191,14 @@
 	}
 	
 	function addInitText(argument) {
-	
-	  context.fillStyle = "#CCC";
+	  context.fillStyle = "#333";
 	  context.font = "28px sans-serif";
 		context.fillText(Const.GAME_NAME, 52,  150);
 		context.stroke();
-	  context.fillStyle = "#FFF";
-	  context.font = "11px sans-serif";
-		context.fillText(Const.START_INSTRUCTION, 55,  380);
+	  context.fillStyle = "#000";
+	  context.font = "12px sans-serif";
+		context.fillText(Const.START_INSTRUCTION, 48,  180);
 		context.stroke();
-	}
-	
-	function createTracks(argument) {
-	  context.strokeStyle = "#666";
-	  context.beginPath();
-	        context.lineWidth = 3
-	        context.setLineDash([20,30]);
-	        context.moveTo(80,0);
-	        context.lineTo(75,400);
-	        context.moveTo(160,0);
-	        context.lineTo(160,400);
-	    context.stroke();
-	    context.lineDashOffset = context.lineDashOffset - speed;
-	    if(context.lineDashOffset > 50-speed) {
-	      context.lineDashOffset = 0
-	    }
 	}
 	
 	function addControls(argument) {
@@ -214,12 +206,18 @@
 	  $(document).on("keyup", keyUpHandler)
 	}
 	
-	function keyUpHandler(argument) {
-	  speed -= 15;
+	function keyUpHandler(evt) {
+	  if(evt.which == 17)
+	    speed = orignSpeed;
+	    if(inZipMode) {
+	      clearTimeout(runEnemyCarsTimeout);
+	      runEnemyCarsTimeout = setTimeout(runEnemyCars, (750/speed) * 10);
+	      inZipMode = false;
+	    }
 	}
 	
 	function keyDownHandler(evt) {
-	  console.log(evt.which);
+	  // console.log(evt.which);
 	  if(evt.which == 32 && gameState == 0) {
 	    gameState = 1;
 	    startGame();
@@ -230,17 +228,21 @@
 	        break;
 	      case 39:
 	        slidePlayerCar(false)
-	        console.log("palyer move right");
+	        // console.log("palyer move right");
 	        break;
 	      case 37:
-	
 	        slidePlayerCar(true)
-	        console.log("palyer move left");
+	        // console.log("palyer move left");
 	        break;
-	      case 38:
-	        speed += 15;
+	      case 17:
+	        speed = orignSpeed + 10;
 	        score++;
-	        console.log("palyer speeds up");
+	        if(!inZipMode) {
+	          console.log("palyer speeds up");
+	          inZipMode = true;
+	          clearTimeout(runEnemyCarsTimeout);
+	          runEnemyCarsTimeout = setTimeout(runEnemyCars, (750/speed) * 10);
+	        }
 	      default:
 	
 	    }
@@ -248,7 +250,6 @@
 	}
 	
 	function startGame(argument) {
-	  console.log("palyer game starts");
 	  render();
 	}
 	
@@ -259,11 +260,8 @@
 	  context.font = "10px sans-serif";
 		context.fillText("Score : "+score, 165,  15);
 		context.stroke();
-	  if(score > speed * 10) {
-	    speed += 10;
-	  }
-	  if(speed >= 50) {
-	    endGame();
+	  if(score > speed * 100) {
+	    speed += 1;
 	  }
 	}
 	
