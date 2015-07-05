@@ -55,21 +55,25 @@
 
 	var Const = {
 	  contextType: '2d',
+	  stageWidth : 400,
+	  stageHeight : 420,
+	  gameWidth : 255,
+	  gameHeight : 420,
 	  GAME_NAME  :"pixcel cars",
 	  START_INSTRUCTION : "Press Spacebar to start !!!",
-	  BLOCK_SIZE : 10
+	  BLOCK_SIZE : 15
 	}
 	
 	var bgColor = "#DBDFCD";
 	var canvas, context, speed = 5, gameState = 0, score = 0, highScore = 0,
-	 plyX = 9, plyY = 36, speed = 1, orignSpeed = 1;
+	 plyX = 2, plyY = 420/15 - 5, speed = 10, orignSpeed = 1;
 	var runEnemyCarsTimeout, inZipMode = false;
 	
 	
 	function init(canvasId) {
 	  canvas = document.getElementById(canvasId);
-	  canvas.height = 400;
-	  canvas.width = 240;
+	  canvas.height = Const.stageWidth;
+	  canvas.width = Const.stageHeight;
 	  context = canvas.getContext(Const.contextType);
 	  context.lineDashOffset = 0
 	  initPreScreen();
@@ -97,9 +101,10 @@
 	}
 	
 	function render(static) {
-	  context.clearRect(0, 0, canvas.width, canvas.height);
-	  var row = canvas.height/10;
-	  var col = canvas.width/10;
+	  context.clearRect(0, 0, Const.stageWidth, Const.stageWidth);
+	  var row = Const.gameHeight/Const.BLOCK_SIZE;
+	  var col = Const.gameWidth/Const.BLOCK_SIZE;
+	  console.log(row, col);
 	  for (var i = 0; i < row; i++) {
 	    for (var j = 0; j < col; j++) {
 	      createBlocks(false, j, i);
@@ -109,19 +114,22 @@
 	  runEnemyCars();
 	  return;
 	}
-	
+	var enemyCarArr = [];
 	function runEnemyCars() {
 	  if(gameState == 0) {
 	    return;
 	  }
-	  console.log("runEnemyCars | "   , (750/speed) * 10);
-	  var xPosArr = [4,9,14];
-	  var x = xPosArr[Math.round(Math.random()*2)]
-	  moveCar(x, -4)
-	  runEnemyCarsTimeout = setTimeout(runEnemyCars, (750/speed) * 10);
+	  console.log("runEnemyCars | ", (750/speed) * 10);
+	  var xPosArr = [2,7,12];
+	  var x = xPosArr[Math.round(Math.random()*2)];
+	  var car = null;
+	  moveCar(x, -4, car)
+	  car = setTimeout(runEnemyCars, (750/speed) * 10)
+	  enemyCarArr.push(car);
+	
 	}
 	
-	function moveCar(x, y) {
+	function moveCar(x, y, car) {
 	  if(gameState == 0) {
 	    return;
 	  }
@@ -129,16 +137,14 @@
 	  y++;
 	
 	  enemyCar(x,y,false);
-	  // console.log(x,y);
-	  if(y < 40) {
-	    setTimeout(moveCar, 750/speed,x,y);
+	  if(y < Const.gameHeight/15) {
+	    setTimeout(moveCar, 750/speed,x,y, car);
 	  } else {
-	    y = -4;
-	    // setTimeout(moveCar, Math.random()*2000,x,y);
+	    clearTimeout(car);
 	  }
 	  if(x == plyX && y > plyY - 3)  {
+	    console.log("gameOver", x, plyX, y, plyY);
 	    gameState = 0;
-	    console.log("gameOver");
 	    endGame();
 	  }
 	  addScore();
@@ -149,10 +155,10 @@
 	  var xPos = onLeft ? -5 : 5;
 	  console.log(plyX);
 	  plyX += xPos;
-	  if(plyX < 4) {
-	    plyX = 4
-	  } else if(plyX > 14) {
-	    plyX = 14
+	  if(plyX < 2) {
+	    plyX = 2
+	  } else if(plyX > 12) {
+	    plyX = 12
 	  }
 	  playerCar(plyX, plyY, false);
 	}
@@ -193,11 +199,11 @@
 	function addInitText(argument) {
 	  context.fillStyle = "#333";
 	  context.font = "28px sans-serif";
-		context.fillText(Const.GAME_NAME, 52,  150);
+		context.fillText(Const.GAME_NAME, 152,  150);
 		context.stroke();
 	  context.fillStyle = "#000";
 	  context.font = "12px sans-serif";
-		context.fillText(Const.START_INSTRUCTION, 48,  180);
+		context.fillText(Const.START_INSTRUCTION, 148,  180);
 		context.stroke();
 	}
 	
@@ -207,13 +213,13 @@
 	}
 	
 	function keyUpHandler(evt) {
-	  if(evt.which == 17)
-	    speed = orignSpeed;
-	    if(inZipMode) {
-	      clearTimeout(runEnemyCarsTimeout);
-	      runEnemyCarsTimeout = setTimeout(runEnemyCars, (750/speed) * 10);
-	      inZipMode = false;
-	    }
+	    // if(evt.which == 17)
+	    //   speed = orignSpeed;
+	    //   if(inZipMode) {
+	    //     clearTimeout(runEnemyCarsTimeout);
+	    //     runEnemyCarsTimeout = setTimeout(runEnemyCars, (750/speed) * 10);
+	    //     inZipMode = false;
+	    //   }
 	}
 	
 	function keyDownHandler(evt) {
@@ -235,14 +241,14 @@
 	        // console.log("palyer move left");
 	        break;
 	      case 17:
-	        speed = orignSpeed + 10;
-	        score++;
-	        if(!inZipMode) {
-	          console.log("palyer speeds up");
-	          inZipMode = true;
-	          clearTimeout(runEnemyCarsTimeout);
-	          runEnemyCarsTimeout = setTimeout(runEnemyCars, (750/speed) * 10);
-	        }
+	        // speed = orignSpeed + 10;
+	        // score++;
+	        // if(!inZipMode) {
+	        //   console.log("palyer speeds up");
+	        //   inZipMode = true;
+	        //   clearTimeout(runEnemyCarsTimeout);
+	        //   runEnemyCarsTimeout = setTimeout(runEnemyCars, (750/speed) * 10);
+	        // }
 	      default:
 	
 	    }
@@ -254,14 +260,19 @@
 	}
 	
 	function addScore() {
-	  console.log(score, speed);
+	  // console.log(score, speed);
 	  score++;
-	  context.fillStyle = "#FFF";
-	  context.font = "10px sans-serif";
-		context.fillText("Score : "+score, 165,  15);
+	  context.clearRect(Const.gameWidth, 0, Const.stageWidth, 30)
+	  context.clearRect(Const.gameWidth, 70, Const.stageWidth, 90)
+	  context.fillStyle = "#333";
+	  context.font = "14px sans-serif";
+		context.fillText("Score : "+score, Const.gameWidth + 10,  30);
 		context.stroke();
 	  if(score > speed * 100) {
 	    speed += 1;
+	  }
+	  if(speed > 20) {
+	    speed = 10;
 	  }
 	}
 	
@@ -269,19 +280,23 @@
 	  if(highScore < score) {
 	    highScore = score;
 	  }
-	  gameState = 0;
-	  score = 0;
-	  speed = 10;
 	  setTimeout(function() {
-	    initPreScreen();
-	    context.fillStyle = "#FFF";
+	    context.clearRect(Const.gameWidth, 30, Const.stageWidth, 30)
+	    context.fillStyle = "#333";
 	    context.font = "20px sans-serif";
-	  	context.fillText(highScore, 100, 200);
+	  	context.fillText("Game Over", Const.gameWidth + 10,  120);
+	    context.font = "14px sans-serif";
+	  	context.fillText("HighScore : " + highScore, Const.gameWidth + 10,  60);
+	    console.log(highScore, score);
+	    if(score > highScore) {
+	      console.log(highScore);
+	  	  context.fillText("New HighScore is " + highScore, Const.gameWidth + 10,  90);
+	    }
+	  	context.stroke();
+	    gameState = 0;
+	    score = 0;
+	    speed = 10;
 	  }, 200)
-	}
-	
-	function showScoreScreen(argument) {
-	  // body...
 	}
 	
 	module.exports  = {
