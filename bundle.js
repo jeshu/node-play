@@ -104,7 +104,6 @@
 	  context.clearRect(0, 0, Const.stageWidth, Const.stageWidth);
 	  var row = Const.gameHeight/Const.BLOCK_SIZE;
 	  var col = Const.gameWidth/Const.BLOCK_SIZE;
-	  console.log(row, col);
 	  for (var i = 0; i < row; i++) {
 	    for (var j = 0; j < col; j++) {
 	      createBlocks(false, j, i);
@@ -119,7 +118,6 @@
 	  if(gameState == 0) {
 	    return;
 	  }
-	  console.log("runEnemyCars | ", (750/speed) * 10);
 	  var xPosArr = [2,7,12];
 	  var x = xPosArr[Math.round(Math.random()*2)];
 	  var car = null;
@@ -143,7 +141,6 @@
 	    clearTimeout(car);
 	  }
 	  if(x == plyX && y > plyY - 3)  {
-	    console.log("gameOver", x, plyX, y, plyY);
 	    gameState = 0;
 	    endGame();
 	  }
@@ -153,7 +150,6 @@
 	function slidePlayerCar(onLeft) {
 	  playerCar(plyX, plyY, true)
 	  var xPos = onLeft ? -5 : 5;
-	  console.log(plyX);
 	  plyX += xPos;
 	  if(plyX < 2) {
 	    plyX = 2
@@ -287,9 +283,7 @@
 	  	context.fillText("Game Over", Const.gameWidth + 10,  120);
 	    context.font = "14px sans-serif";
 	  	context.fillText("HighScore : " + highScore, Const.gameWidth + 10,  60);
-	    console.log(highScore, score);
 	    if(score > highScore) {
-	      console.log(highScore);
 	  	  context.fillText("New HighScore is " + highScore, Const.gameWidth + 10,  90);
 	    }
 	  	context.stroke();
