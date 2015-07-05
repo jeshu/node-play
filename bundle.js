@@ -63,13 +63,13 @@
 	  START_INSTRUCTION : "Press Spacebar to start !!!",
 	  BLOCK_SIZE : 15
 	}
-	
+
 	var bgColor = "#DBDFCD";
 	var canvas, context, speed = 5, gameState = 0, score = 0, highScore = 0,
 	 plyX = 2, plyY = 420/15 - 5, speed = 10, orignSpeed = 1;
 	var runEnemyCarsTimeout, inZipMode = false;
-	
-	
+
+
 	function init(canvasId) {
 	  canvas = document.getElementById(canvasId);
 	  canvas.height = Const.stageWidth;
@@ -79,27 +79,27 @@
 	  initPreScreen();
 	  addControls();
 	}
-	
+
 	function initPreScreen(argument) {
 	  addInitText();
 	  //render(true);
 	  // setTimeout(addInitText, 200);
 	}
-	
+
 	function createBlocks(isDark, x, y) {
 	  var color = isDark ? "#5C604E" : "#CDD2B9";
 	  x = x*Const.BLOCK_SIZE;
 	  y = y*Const.BLOCK_SIZE;
 	  context.fillStyle = color;
 	  context.fillRect(x, y, Const.BLOCK_SIZE, Const.BLOCK_SIZE);
-	
+
 	  context.fillStyle = bgColor;
 	  context.fillRect(x+1, y+1, Const.BLOCK_SIZE - 2 , Const.BLOCK_SIZE -2);
-	
+
 	  context.fillStyle = color;
 	  context.fillRect(x+3, y+3, Const.BLOCK_SIZE -6 , Const.BLOCK_SIZE -6);
 	}
-	
+
 	function render(static) {
 	  context.clearRect(0, 0, Const.stageWidth, Const.stageWidth);
 	  var row = Const.gameHeight/Const.BLOCK_SIZE;
@@ -126,16 +126,16 @@
 	  moveCar(x, -4, car)
 	  car = setTimeout(runEnemyCars, (750/speed) * 10)
 	  enemyCarArr.push(car);
-	
+
 	}
-	
+
 	function moveCar(x, y, car) {
 	  if(gameState == 0) {
 	    return;
 	  }
 	  enemyCar(x,y,true);
 	  y++;
-	
+
 	  enemyCar(x,y,false);
 	  if(y < Const.gameHeight/15) {
 	    setTimeout(moveCar, 750/speed,x,y, car);
@@ -149,7 +149,7 @@
 	  }
 	  addScore();
 	}
-	
+
 	function slidePlayerCar(onLeft) {
 	  playerCar(plyX, plyY, true)
 	  var xPos = onLeft ? -5 : 5;
@@ -162,7 +162,7 @@
 	  }
 	  playerCar(plyX, plyY, false);
 	}
-	
+
 	function playerCar(x, y, clear) {
 	  var carPts = [
 	    {x : x+1, y : y},
@@ -179,7 +179,7 @@
 	    createBlocks(!clear, item.x, item.y)
 	  });
 	}
-	
+
 	function enemyCar(x, y, clear) {
 	  var carPts = [
 	    {x : x+1, y : y},
@@ -195,7 +195,7 @@
 	    createBlocks(!clear, item.x, item.y)
 	  });
 	}
-	
+
 	function addInitText(argument) {
 	  context.fillStyle = "#333";
 	  context.font = "28px sans-serif";
@@ -206,12 +206,12 @@
 		context.fillText(Const.START_INSTRUCTION, 148,  180);
 		context.stroke();
 	}
-	
+
 	function addControls(argument) {
 	  $(document).on("keydown", keyDownHandler)
 	  $(document).on("keyup", keyUpHandler)
 	}
-	
+
 	function keyUpHandler(evt) {
 	    // if(evt.which == 17)
 	    //   speed = orignSpeed;
@@ -221,7 +221,7 @@
 	    //     inZipMode = false;
 	    //   }
 	}
-	
+
 	function keyDownHandler(evt) {
 	  // console.log(evt.which);
 	  if(evt.which == 32 && gameState == 0) {
@@ -250,15 +250,15 @@
 	        //   runEnemyCarsTimeout = setTimeout(runEnemyCars, (750/speed) * 10);
 	        // }
 	      default:
-	
+
 	    }
 	  }
 	}
-	
+
 	function startGame(argument) {
 	  render();
 	}
-	
+
 	function addScore() {
 	  // console.log(score, speed);
 	  score++;
@@ -275,7 +275,7 @@
 	    speed = 10;
 	  }
 	}
-	
+
 	function endGame(argument) {
 	  if(highScore < score) {
 	    highScore = score;
@@ -298,7 +298,7 @@
 	    speed = 10;
 	  }, 200)
 	}
-	
+
 	module.exports  = {
 	  init : init
 	}
@@ -306,4 +306,3 @@
 
 /***/ }
 /******/ ]);
-//# sourceMappingURL=bundle.js.map
